@@ -3,6 +3,9 @@ fulltext.txt
 RISC-V.pdf
 Computer-Organization-and-Design-The-Hardware-Software-Interface-RISC-V-Edition.pdf
 
+# Fuentes LaTeX de las figuras; se conserva la versión exportada.
+docs/figures/*.tex
+
 # Resultados de simulación y archivos generados.
 *.vvp
 *.vcd
