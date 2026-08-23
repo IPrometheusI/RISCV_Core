@@ -10,10 +10,11 @@ unidad de control, ALU, banco de registros y memorias de instrucciones y datos.
 ![Arquitectura](https://img.shields.io/badge/arquitectura-single--cycle-8250df)
 ![Estado](https://img.shields.io/badge/estado-en%20desarrollo-orange)
 
-<img src="docs/images/riscv-single-cycle-datapath.png" alt="Datapath monociclo RISC-V" width="900">
+<img src="docs/images/riscv-single-cycle-datapath.png" alt="Datapath monociclo RISC-V modificado" width="900">
 
 **[Ver el RTL](rtl/)** ·
-**[Leer las notas de arquitectura](docs/chapter4_single_cycle_notes.md)**
+**[Leer las notas de arquitectura](docs/chapter4_single_cycle_notes.md)** ·
+**[Ver la figura en PDF](docs/figures/riscv-single-cycle-datapath.pdf)**
 
 </div>
 
@@ -31,8 +32,12 @@ datapath.
 
 ## Microarquitectura
 
-La imagen superior muestra la arquitectura de referencia que se está
-implementando. El flujo principal es:
+La imagen superior muestra la versión modificada de la microarquitectura que se
+está implementando. Además del datapath base, incorpora la señal
+`BranchNotEqual` y la lógica de condición necesaria para `bne`, junto con el
+camino de control para `addi`, `andi` y `ori`.
+
+El flujo principal es:
 
 1. El `PC` direcciona la memoria de instrucciones.
 2. La unidad de control decodifica el `opcode`.
@@ -83,6 +88,8 @@ rtl/
 docs/
 ├── images/
 │   └── riscv-single-cycle-datapath.png
+├── figures/
+│   └── riscv-single-cycle-datapath.pdf
 └── chapter4_single_cycle_notes.md
 
 testbench/           # Banco de pruebas en desarrollo
