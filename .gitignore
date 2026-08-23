@@ -1,0 +1,12 @@
+# Archivos de fuente y texto extraídos del libro; no forman parte del repositorio.
+fulltext.txt
+Computer-Organization-and-Design-The-Hardware-Software-Interface-RISC-V-Edition.pdf
+
+# Resultados de simulación y archivos generados.
+*.vvp
+*.vcd
+*.out
+
+# Archivos locales del sistema y editores.
+.DS_Store
+.vscode/
