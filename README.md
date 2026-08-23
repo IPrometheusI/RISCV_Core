@@ -84,15 +84,6 @@ Para comprobar la sintaxis del RTL con Icarus Verilog:
 iverilog -g2012 -Wall -s core -o /tmp/riscv_core.vvp rtl/*.v
 ```
 
-El diseño se instancia mediante el módulo `core`, con las entradas:
-
-```verilog
-core uut (
-    .core_clk(clk),
-    .core_reset(reset)
-);
-```
-
 La memoria de instrucciones contiene una secuencia inicial de prueba con
 `sd`, `ld`, `add`, `sub`, `and`, `or` y `beq`.
 
