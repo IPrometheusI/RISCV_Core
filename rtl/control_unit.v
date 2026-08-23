@@ -9,10 +9,12 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-module control_unit(opcode, Branch, MemRead, MemtoReg, ALUOp, MemWrite, ALUSrc, RegWrite);
+module control_unit(opcode, funct3, Branch, BranchNotEqual, MemRead, MemtoReg, ALUOp, MemWrite, ALUSrc, RegWrite);
 
   input [6:0] opcode; // Entrada de 7 bits del opcode de la instrucción
+  input [2:0] funct3; // Campo funct3 para distinguir operaciones relacionadas
   output reg Branch;   // Señal de control para la instrucción Branch
+  output reg BranchNotEqual; // Indica que el branch comprueba desigualdad
   output reg MemRead;  // Señal de control para la lectura de memoria
   output reg MemtoReg; // Señal de control para escribir en el registro desde memoria
   output reg [1:0] ALUOp; // Señal de control para la operación de la ALU
@@ -24,6 +26,7 @@ module control_unit(opcode, Branch, MemRead, MemtoReg, ALUOp, MemWrite, ALUSrc, 
     case (opcode)
       7'b0110011: begin // R-type
         Branch = 0;
+        BranchNotEqual = 0;
         MemRead = 0;
         MemtoReg = 0;
         ALUOp = 2'b10;
@@ -33,6 +36,7 @@ module control_unit(opcode, Branch, MemRead, MemtoReg, ALUOp, MemWrite, ALUSrc, 
       end
       7'b0000011: begin // Load (I-type)
         Branch = 0;
+        BranchNotEqual = 0;
         MemRead = 1;
         MemtoReg = 1;
         ALUOp = 2'b00;
@@ -42,6 +46,7 @@ module control_unit(opcode, Branch, MemRead, MemtoReg, ALUOp, MemWrite, ALUSrc, 
       end
       7'b0100011: begin // Store (S-type)
         Branch = 0;
+        BranchNotEqual = 0;
         MemRead = 0;
         MemtoReg = 'bx; // Don't care
         ALUOp = 2'b00;
@@ -49,8 +54,20 @@ module control_unit(opcode, Branch, MemRead, MemtoReg, ALUOp, MemWrite, ALUSrc, 
         ALUSrc = 1;
         RegWrite = 0;
       end
+      7'b0010011: begin // Operaciones inmediatas: addi, andi y ori
+        Branch = 0;
+        BranchNotEqual = 0;
+        MemRead = 0;
+        MemtoReg = 0;
+        ALUOp = 2'b11;
+        MemWrite = 0;
+        ALUSrc = 1;
+        RegWrite = 1;
+      end
       7'b1100011: begin // Branch if equal (B-type)
-        Branch = 1;
+        // Solo se habilitan beq (funct3=000) y bne (funct3=001).
+        Branch = (funct3 == 3'b000) || (funct3 == 3'b001);
+        BranchNotEqual = (funct3 == 3'b001);
         MemRead = 0;
         MemtoReg = 'bx; // Don't care
         ALUOp = 2'b01;  // La ALU resta rs1 - rs2
@@ -60,6 +77,7 @@ module control_unit(opcode, Branch, MemRead, MemtoReg, ALUOp, MemWrite, ALUSrc, 
       end
       default: begin // Default case for unsupported opcodes
         Branch = 'bx;   // Don't care
+        BranchNotEqual = 'bx; // Don't care
         MemRead = 'bx;   // Don't care
         MemtoReg = 'bx;   // Don't care
         ALUOp = 'bx;     // Don't care

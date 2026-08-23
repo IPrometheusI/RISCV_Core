@@ -14,6 +14,11 @@ El subconjunto de RISC-V que implementa el diseño monociclo del libro es:
 - Instrucciones aritmético-lógicas: `add`, `sub`, `and`, `or`
 - Salto condicional: `beq` (branch if equal)
 
+El proyecto extiende este subconjunto con `addi`, `andi`, `ori` y `bne`. Estas
+extensiones reutilizan las rutas existentes del datapath: el formato I-type y
+el mux del inmediato para las operaciones inmediatas, y el mismo cálculo de
+destino de branch para `bne`, cambiando únicamente la condición de igualdad.
+
 Toda instrucción comparte los dos primeros pasos:
 
 1. Enviar el PC a la memoria de instrucciones y leer (fetch) la instrucción.

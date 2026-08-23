@@ -43,6 +43,7 @@ module core(
     // ID (Instruction Decode): control, registros e inmediato
     // -------------------------------------------------------------------------
     wire branch_wire;                    // Indica que la instrucción es un branch.
+    wire branch_not_equal_wire;           // Selecciona la condición de bne.
     wire memread_wire;                   // Habilita lectura de memoria de datos.
     wire memtoreg_wire;                  // Selecciona memoria o ALU para writeback.
     wire [1:0] aluop_wire;               // Operación general solicitada a la ALU.
@@ -61,6 +62,7 @@ module core(
     wire [3:0]  alu_ctl_wire;            // Control específico de la operación de la ALU.
     wire [63:0] alu_out_wire;            // Resultado de la ALU o dirección efectiva.
     wire alu_zero_flag_wire;             // Vale 1 cuando el resultado de la ALU es cero.
+    wire branch_condition_wire;           // Zero o !Zero según beq/bne.
     wire pc_src_sel;                     // Selecciona PC+4 o el destino del branch.
 
     // -------------------------------------------------------------------------
@@ -116,7 +118,9 @@ module core(
     // Decodifica el opcode y genera las señales de control del datapath.
     control_unit u_control_unit(
         .opcode(decoded_inst[6:0]),
+        .funct3(decoded_inst[14:12]),
         .Branch(branch_wire),
+        .BranchNotEqual(branch_not_equal_wire),
         .MemRead(memread_wire),
         .MemtoReg(memtoreg_wire),
         .ALUOp(aluop_wire),
@@ -152,10 +156,14 @@ module core(
         .imm_out(imm_out_wire)
     );
 
-    // El branch se toma solamente cuando la comparación rs1-rs2 produce cero.
+    // beq se toma con Zero=1; bne se toma con Zero=0.
+    assign branch_condition_wire = branch_not_equal_wire
+                                 ? ~alu_zero_flag_wire
+                                 : alu_zero_flag_wire;
+
     and_gate u_and(
         .a(branch_wire),
-        .b(alu_zero_flag_wire),
+        .b(branch_condition_wire),
         .z(pc_src_sel)
     );
 

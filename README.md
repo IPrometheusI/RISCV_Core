@@ -48,9 +48,21 @@ implementando. El flujo principal es:
 | Clase | Instrucciones | Función principal |
 |---|---|---|
 | R-type | `add`, `sub`, `and`, `or` | Operaciones entre dos registros |
-| I-type | `ld` | Cálculo de dirección y lectura de un doubleword |
+| I-type | `ld`, `addi`, `andi`, `ori` | Lectura de memoria u operación con inmediato |
 | S-type | `sd` | Cálculo de dirección y escritura de un doubleword |
-| B-type | `beq` | Branch relativo si dos registros son iguales |
+| B-type | `beq`, `bne` | Branch relativo según igualdad o desigualdad |
+
+## Pseudo-instrucciones
+
+Las pseudo-instrucciones no agregan nuevos opcodes al hardware. El ensamblador
+las convierte en instrucciones reales que el core ya puede ejecutar:
+
+| Pseudo-instrucción | Expansión equivalente |
+|---|---|
+| `nop` | `add x0, x0, x0` |
+| `mv rd, rs1` | `add rd, rs1, x0` |
+| `neg rd, rs1` | `sub rd, x0, rs1` |
+| `beqz rs1, etiqueta` | `beq rs1, x0, etiqueta` |
 
 ## Estructura del proyecto
 
@@ -85,12 +97,13 @@ iverilog -g2012 -Wall -s core -o /tmp/riscv_core.vvp rtl/*.v
 ```
 
 La memoria de instrucciones contiene una secuencia inicial de prueba con
-`sd`, `ld`, `add`, `sub`, `and`, `or` y `beq`.
+`sd`, `ld`, `add`, `sub`, `and`, `or`, `addi`, `andi`, `ori`, `bne` y `beq`.
 
 ## Estado actual
 
 - Datapath monociclo conectado.
-- Control principal para `ld`, `sd`, `add`, `sub`, `and`, `or` y `beq`.
+- Control principal para `ld`, `sd`, `add`, `sub`, `and`, `or`, `addi`, `andi`,
+  `ori`, `beq` y `bne`.
 - Lectura combinacional de registros y memoria de datos.
 - Escritura sincronizada del PC, registros y memoria de datos.
 - Testbench completo pendiente de desarrollo.

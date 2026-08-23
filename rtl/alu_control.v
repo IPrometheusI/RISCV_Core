@@ -29,9 +29,18 @@ module alu_control (ALUOp, Funct7, Funct3, ALUctl);
           default: ALUctl = 4'b0000; // Default case
         endcase
       end
+      2'b11: begin
+        // Operaciones inmediatas soportadas. En este formato funct7
+        // pertenece al inmediato, por lo que solo se usa funct3.
+        case (Funct3)
+          3'b000: ALUctl = 4'b0010; // ADDI
+          3'b111: ALUctl = 4'b0000; // ANDI
+          3'b110: ALUctl = 4'b0001; // ORI
+          default: ALUctl = 4'b0000; // Operación inmediata no soportada
+        endcase
+      end
       default: ALUctl = 4'b0000; // Default case
     endcase
     end
 endmodule
-
 
