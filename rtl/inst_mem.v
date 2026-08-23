@@ -20,8 +20,8 @@ module inst_mem (read_address, instruction);
 
   initial begin
     // Instrucciones soportadas por el subconjunto actual.
-    // La secuencia prueba memoria, operaciones R-type, operaciones inmediatas
-    // y un bne tomado que salta directamente al beq final.
+    // La secuencia prueba memoria, operaciones R-type, operaciones inmediatas,
+    // XOR, desplazamientos, comparaciones y un bne tomado.
     memory[0] = 32'h00003023; // sd  x0, 0(x0)
     memory[1] = 32'h00003083; // ld  x1, 0(x0)
     memory[2] = 32'h00108133; // add x2, x1, x1
@@ -31,9 +31,21 @@ module inst_mem (read_address, instruction);
     memory[6] = 32'h00528313; // addi x6, x5, 5
     memory[7] = 32'h00737393; // andi x7, x6, 7
     memory[8] = 32'h0083E413; // ori  x8, x7, 8
-    memory[9] = 32'h00041463; // bne  x8, x0, 8 (salta a memory[11])
-    memory[10] = 32'h06300493; // addi x9, x0, 99 (se salta)
-    memory[11] = 32'h00840063; // beq  x8, x8, 0 (bucle en esta instrucción)
+    memory[9] = 32'h007444B3; // xor  x9, x8, x7
+    memory[10] = 32'h00649533; // sll  x10, x9, x6
+    memory[11] = 32'h006555B3; // srl  x11, x10, x6
+    memory[12] = 32'h40655633; // sra  x12, x10, x6
+    memory[13] = 32'h00A5A6B3; // slt  x13, x11, x10
+    memory[14] = 32'h00A5B733; // sltu x14, x11, x10
+    memory[15] = 32'h00174793; // xori x15, x14, 1
+    memory[16] = 32'h00179813; // slli x16, x15, 1
+    memory[17] = 32'h00185893; // srli x17, x16, 1
+    memory[18] = 32'h40185913; // srai x18, x16, 1
+    memory[19] = 32'h00192993; // slti x19, x18, 1
+    memory[20] = 32'h00193A13; // sltiu x20, x18, 1
+    memory[21] = 32'h00041463; // bne  x8, x0, 8 (salta a memory[23])
+    memory[22] = 32'h06300493; // addi x9, x0, 99 (se salta)
+    memory[23] = 32'h00840063; // beq  x8, x8, 0 (bucle en esta instrucción)
   end
 
   always @(*) begin

@@ -24,7 +24,13 @@ module alu (ALUctl, A, B, ALUOut, Zero);
       4'b0000: ALUOut = A & B;          // AND
       4'b0001: ALUOut = A | B;          // OR
       4'b0010: ALUOut = A + B;          // ADD
+      4'b0011: ALUOut = A ^ B;          // XOR
+      4'b0100: ALUOut = A << B[5:0];     // SLL
+      4'b0101: ALUOut = A >> B[5:0];     // SRL lógico
       4'b0110: ALUOut = A - B;          // SUBTRACT
+      4'b0111: ALUOut = $signed(A) >>> B[5:0]; // SRA aritmético
+      4'b1000: ALUOut = ($signed(A) < $signed(B)) ? 64'd1 : 64'd0; // SLT
+      4'b1001: ALUOut = (A < B) ? 64'd1 : 64'd0; // SLTU
       default: ALUOut = 64'b0;          // Default case
     endcase
   end

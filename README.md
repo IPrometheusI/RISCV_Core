@@ -52,8 +52,8 @@ El flujo principal es:
 
 | Clase | Instrucciones | Función principal |
 |---|---|---|
-| R-type | `add`, `sub`, `and`, `or` | Operaciones entre dos registros |
-| I-type | `ld`, `addi`, `andi`, `ori` | Lectura de memoria u operación con inmediato |
+| R-type | `add`, `sub`, `and`, `or`, `xor`, `sll`, `srl`, `sra`, `slt`, `sltu` | Operaciones entre dos registros |
+| I-type | `ld`, `addi`, `andi`, `ori`, `xori`, `slli`, `srli`, `srai`, `slti`, `sltiu` | Lectura de memoria u operación con inmediato |
 | S-type | `sd` | Cálculo de dirección y escritura de un doubleword |
 | B-type | `beq`, `bne` | Branch relativo según igualdad o desigualdad |
 
@@ -104,13 +104,16 @@ iverilog -g2012 -Wall -s core -o /tmp/riscv_core.vvp rtl/*.v
 ```
 
 La memoria de instrucciones contiene una secuencia inicial de prueba con
-`sd`, `ld`, `add`, `sub`, `and`, `or`, `addi`, `andi`, `ori`, `bne` y `beq`.
+`sd`, `ld`, `add`, `sub`, `and`, `or`, `addi`, `andi`, `ori`, `xor`, `sll`,
+`srl`, `sra`, `slt`, `sltu`, `xori`, `slli`, `srli`, `srai`, `slti`, `sltiu`,
+`bne` y `beq`.
 
 ## Estado actual
 
 - Datapath monociclo conectado.
 - Control principal para `ld`, `sd`, `add`, `sub`, `and`, `or`, `addi`, `andi`,
-  `ori`, `beq` y `bne`.
+  `ori`, `xor`, `sll`, `srl`, `sra`, `slt`, `sltu`, `xori`, `slli`, `srli`,
+  `srai`, `slti`, `sltiu`, `beq` y `bne`.
 - Lectura combinacional de registros y memoria de datos.
 - Escritura sincronizada del PC, registros y memoria de datos.
 - Testbench completo pendiente de desarrollo.
