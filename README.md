@@ -111,8 +111,7 @@ La microarquitectura se basa en el Capítulo 4, secciones 4.1–4.4, de:
 > David A. Patterson y John L. Hennessy, *Computer Organization and Design:
 > The Hardware/Software Interface — RISC-V Edition*.
 
-El libro se utiliza como referencia de diseño. El PDF y el archivo de texto
-extraído `fulltext.txt` se mantienen fuera del repositorio.
+El libro se utiliza como referencia de diseño.
 
 ## Autor
 
