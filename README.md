@@ -34,7 +34,7 @@ datapath.
 
 La imagen superior muestra la versión modificada de la microarquitectura que se
 está implementando. Además del datapath base, incorpora la señal
-`BranchNotEqual` y la lógica de condición necesaria para `bne`, junto con el
+`BranchTaken` y la lógica de condición necesaria para los branches, junto con el
 camino de control para `addi`, `andi` y `ori`.
 
 El flujo principal es:
@@ -46,7 +46,7 @@ El flujo principal es:
 5. La ALU calcula una operación, una dirección efectiva o la comparación de
    un branch.
 6. La memoria de datos y el mux de writeback completan `ld` y `sd`.
-7. `Branch AND Zero` selecciona entre `PC + 4` y el destino de `beq`.
+7. `Branch AND BranchTaken` selecciona entre `PC + 4` y el destino del branch.
 
 ## Instrucciones implementadas
 
@@ -55,7 +55,7 @@ El flujo principal es:
 | R-type | `add`, `sub`, `and`, `or`, `xor`, `sll`, `srl`, `sra`, `slt`, `sltu` | Operaciones entre dos registros |
 | I-type | `ld`, `addi`, `andi`, `ori`, `xori`, `slli`, `srli`, `srai`, `slti`, `sltiu` | Lectura de memoria u operación con inmediato |
 | S-type | `sd` | Cálculo de dirección y escritura de un doubleword |
-| B-type | `beq`, `bne` | Branch relativo según igualdad o desigualdad |
+| B-type | `beq`, `bne`, `blt`, `bge`, `bltu`, `bgeu` | Branch relativo según comparación signed o unsigned |
 
 ## Pseudo-instrucciones
 
@@ -92,7 +92,8 @@ docs/
 │   └── riscv-single-cycle-datapath.pdf
 └── chapter4_single_cycle_notes.md
 
-testbench/           # Banco de pruebas en desarrollo
+testbench/
+└── branch_tb.v      # Pruebas de condiciones de branch y PCSrc
 ```
 
 ## Uso rápido
@@ -113,10 +114,11 @@ La memoria de instrucciones contiene una secuencia inicial de prueba con
 - Datapath monociclo conectado.
 - Control principal para `ld`, `sd`, `add`, `sub`, `and`, `or`, `addi`, `andi`,
   `ori`, `xor`, `sll`, `srl`, `sra`, `slt`, `sltu`, `xori`, `slli`, `srli`,
-  `srai`, `slti`, `sltiu`, `beq` y `bne`.
+  `srai`, `slti`, `sltiu`, `beq`, `bne`, `blt`, `bge`, `bltu` y `bgeu`.
 - Lectura combinacional de registros y memoria de datos.
 - Escritura sincronizada del PC, registros y memoria de datos.
-- Testbench completo pendiente de desarrollo.
+- Testbench general pendiente de desarrollo; las condiciones de branch ya
+  tienen pruebas funcionales en `testbench/branch_tb.v`.
 
 ## Fuente de la arquitectura
 

@@ -19,7 +19,18 @@ module alu_control (ALUOp, Funct7, Funct3, ALUctl);
   always @(*) begin
     case (ALUOp)
       2'b00: ALUctl = 4'b0010; // ADD
-      2'b01: ALUctl = 4'b0110; // SUBTRACT
+      2'b01: begin
+        // Branch: la ALU genera directamente si la condición se cumple.
+        case (Funct3)
+          3'b000: ALUctl = 4'b1010; // BEQ
+          3'b001: ALUctl = 4'b1011; // BNE
+          3'b100: ALUctl = 4'b1100; // BLT
+          3'b101: ALUctl = 4'b1101; // BGE
+          3'b110: ALUctl = 4'b1110; // BLTU
+          3'b111: ALUctl = 4'b1111; // BGEU
+          default: ALUctl = 4'b0000; // Branch no soportado
+        endcase
+      end
       2'b10: begin
         case ({Funct7, Funct3})
           {7'b0000000, 3'b000}: ALUctl = 4'b0010; // ADD

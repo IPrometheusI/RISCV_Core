@@ -12,7 +12,7 @@
 
 
 // Compuerta AND usada para decidir si un branch modifica el PC.
-// El branch se toma cuando Branch=1 y la ALU produce Zero=1.
+// El branch se toma cuando Branch=1 y la ALU produce BranchTaken=1.
 module and_gate(
     input wire a,
     input wire b,
@@ -43,7 +43,6 @@ module core(
     // ID (Instruction Decode): control, registros e inmediato
     // -------------------------------------------------------------------------
     wire branch_wire;                    // Indica que la instrucción es un branch.
-    wire branch_not_equal_wire;           // Selecciona la condición de bne.
     wire memread_wire;                   // Habilita lectura de memoria de datos.
     wire memtoreg_wire;                  // Selecciona memoria o ALU para writeback.
     wire [1:0] aluop_wire;               // Operación general solicitada a la ALU.
@@ -61,8 +60,7 @@ module core(
     wire [63:0] alu_b_wire;              // Segunda entrada seleccionada para la ALU.
     wire [3:0]  alu_ctl_wire;            // Control específico de la operación de la ALU.
     wire [63:0] alu_out_wire;            // Resultado de la ALU o dirección efectiva.
-    wire alu_zero_flag_wire;             // Vale 1 cuando el resultado de la ALU es cero.
-    wire branch_condition_wire;           // Zero o !Zero según beq/bne.
+    wire branch_taken_wire;              // Condición de branch evaluada por la ALU.
     wire pc_src_sel;                     // Selecciona PC+4 o el destino del branch.
 
     // -------------------------------------------------------------------------
@@ -120,7 +118,6 @@ module core(
         .opcode(decoded_inst[6:0]),
         .funct3(decoded_inst[14:12]),
         .Branch(branch_wire),
-        .BranchNotEqual(branch_not_equal_wire),
         .MemRead(memread_wire),
         .MemtoReg(memtoreg_wire),
         .ALUOp(aluop_wire),
@@ -156,29 +153,24 @@ module core(
         .imm_out(imm_out_wire)
     );
 
-    // beq se toma con Zero=1; bne se toma con Zero=0.
-    assign branch_condition_wire = branch_not_equal_wire
-                                 ? ~alu_zero_flag_wire
-                                 : alu_zero_flag_wire;
-
     and_gate u_and(
         .a(branch_wire),
-        .b(branch_condition_wire),
+        .b(branch_taken_wire),
         .z(pc_src_sel)
     );
 
-    // Ejecuta operaciones aritméticas/lógicas, calcula direcciones y compara
-    // registros para beq mediante la bandera Zero.
+    // Ejecuta operaciones aritméticas/lógicas y evalúa directamente la
+    // condición de branch indicada por funct3.
     alu u_alu(
         .ALUctl(alu_ctl_wire),
         .A(read_data_1_wire),
         .B(alu_b_wire),
-        .Zero(alu_zero_flag_wire),
-        .ALUOut(alu_out_wire)
+        .ALUOut(alu_out_wire),
+        .BranchTaken(branch_taken_wire)
     );
 
     // Convierte ALUOp, funct7 y funct3 en el control específico de la ALU.
-    // Para beq, ALUOp=01 selecciona una resta.
+    // Para branches, ALUOp=01 selecciona la condición según funct3.
     alu_control u_aluc_control(
         .ALUOp(aluop_wire),
         .Funct7(decoded_inst[31:25]),
